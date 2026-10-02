@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OrbitX | Acessórios para Starlink Mini</title>
+  <meta name="description" content="Películas antirreflexo, suportes de painel e ventosas para Starlink Mini. Compre com segurança pelo Mercado Livre.">
+  <meta name="theme-color" content="#050705">
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="topbar" id="topbar">
+    <p>Site de demonstração. Toda compra é feita com segurança na loja oficial OrbitX do Mercado Livre.</p>
+    <button class="topbar__close" aria-label="Fechar aviso" onclick="this.parentElement.remove()">×</button>
+  </div>
+
+  <header class="header">
+    <div class="wrap header__row">
+      <a class="logo" href="#" aria-label="OrbitX Technology, página inicial"><img src="img/logo-orbitx.svg" alt="OrbitX Technology" width="152" height="49"></a>
+      <nav class="nav" aria-label="Principal">
+        <a href="#produtos" data-filter-link="peliculas">Películas</a>
+        <a href="#produtos" data-filter-link="suportes">Suportes</a>
+        <a href="#produtos" data-filter-link="acessorios">Acessórios</a>
+        <a href="#sobre">Sobre</a>
+      </nav>
+      <a class="btn btn--ghost btn--sm header__ml" id="storeLink" href="#" target="_blank" rel="noopener">Loja no Mercado Livre</a>
+    </div>
+    <div class="wrap">
+      <form class="search" role="search" onsubmit="event.preventDefault()">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="search" type="search" placeholder="Buscar película, suporte, ventosa…" aria-label="Buscar produtos">
+        <button class="btn btn--accent btn--sm" type="submit">Buscar</button>
+      </form>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <canvas class="hero__stars" id="stars" aria-hidden="true"></canvas>
+      <div class="hero__waves" aria-hidden="true"></div>
+      <div class="wrap hero__grid">
+        <div class="hero__copy">
+          <h1>Sinal no céu.<br><span>Starlink Mini firme no painel.</span></h1>
+          <p class="hero__lead">A OrbitX desenvolve películas antirreflexo e suportes com ventosas para quem leva a Starlink Mini na estrada. Instalação rápida, sem furar nada, e a compra protegida pelo Mercado Livre.</p>
+          <div class="hero__cta">
+            <a class="btn btn--accent" href="#produtos">Ver produtos <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+            <a class="btn btn--ghost" href="#uso">Escolher pelo uso</a>
+          </div>
+          <ul class="hero__chips">
+            <li>Frete grátis em vários itens</li>
+            <li>Compra garantida</li>
+            <li>Até 69% OFF</li>
+          </ul>
+        </div>
+        <a class="hero__card" id="heroCard" href="#" target="_blank" rel="noopener">
+          <span class="hero__card-tag">Mais vendido · Starlink Mini</span>
+          <img src="img/p5.webp" alt="Suporte de painel OrbitX com ventosas segurando uma Starlink Mini" width="1004" height="1200">
+          <span class="hero__card-foot">
+            <span>Suporte de Painel com Ventosas</span>
+            <strong>R$ 88,00</strong>
+          </span>
+        </a>
+      </div>
+    </section>
+
+    <section class="perks" aria-label="Vantagens">
+      <div class="wrap perks__row">
+        <div class="perk"><b>Compra garantida</b><span>pelo Mercado Livre</span></div>
+        <div class="perk"><b>Frete grátis</b><span>em diversos produtos</span></div>
+        <div class="perk"><b>Parcelamento</b><span>sem juros no cartão</span></div>
+        <div class="perk"><b>Sem furos</b><span>instalação com ventosas</span></div>
+        <div class="perk"><b>Suporte</b><span>direto com a OrbitX</span></div>
+      </div>
+    </section>
+
+    <section class="section" id="produtos">
+      <div class="wrap">
+        <div class="section__head">
+          <div>
+            <h2>Ofertas da semana</h2>
+          </div>
+          <div class="tabs" role="tablist" aria-label="Filtrar por categoria">
+            <button class="tab is-active" role="tab" aria-selected="true" data-filter="todos">Todos</button>
+            <button class="tab" role="tab" aria-selected="false" data-filter="peliculas">Películas</button>
+            <button class="tab" role="tab" aria-selected="false" data-filter="suportes">Suportes</button>
+            <button class="tab" role="tab" aria-selected="false" data-filter="acessorios">Acessórios</button>
+          </div>
+        </div>
+        <div class="grid" id="grid"></div>
+        <p class="empty" id="empty" hidden>Nenhum produto encontrado para essa busca.</p>
+        <p class="note">Preços consultados no Mercado Livre em 02/10/2026 e sujeitos a alteração. O valor final aparece no anúncio.</p>
+      </div>
+    </section>
+
+    <section class="section section--alt" id="uso">
+      <div class="wrap">
+        <div class="section__head">
+          <div>
+            <h2>Onde vai a sua Starlink?</h2>
+          </div>
+        </div>
+        <div class="uses">
+          <button class="use" data-filter-link="suportes">
+            <img src="img/p7.webp" alt="" loading="lazy">
+            <span class="use__label">Painel do carro</span>
+            <span class="use__meta">Suportes com ventosas</span>
+          </button>
+          <button class="use" data-filter-link="peliculas">
+            <img src="img/p1.webp" alt="" loading="lazy">
+            <span class="use__label">Menos reflexo</span>
+            <span class="use__meta">Películas antirreflexo</span>
+          </button>
+          <button class="use" data-filter-link="acessorios">
+            <img src="img/p6.webp" alt="" loading="lazy">
+            <span class="use__label">Reposição</span>
+            <span class="use__meta">Ventosas de alta sucção</span>
+          </button>
+          <button class="use" data-filter-link="acessorios">
+            <img src="img/p10.webp" alt="" loading="lazy">
+            <span class="use__label">Carro elétrico</span>
+            <span class="use__meta">Organizador de cabo Wallbox</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="feature" id="sobre">
+      <div class="wrap feature__grid">
+        <div class="feature__media">
+          <img src="img/p9.webp" alt="Kit OrbitX com suporte de painel e adesivo antirreflexo para Starlink Mini" loading="lazy">
+        </div>
+        <div class="feature__copy">
+          <h2>Feito para quem roda com a Starlink Mini</h2>
+          <p>Cada acessório OrbitX resolve um problema real de quem usa internet via satélite no carro: a antena que escorrega no painel, o reflexo que incomoda o motorista e a fiscalização que pede o para-brisa livre.</p>
+          <ul class="checks">
+            <li><b>Encaixe sob medida</b> para a Starlink Mini, incluindo a geração G5.</li>
+            <li><b>Ventosas de alta sucção</b> que seguram firme em painel curto ou longo.</li>
+            <li><b>Película antirreflexo</b> que tira o brilho da antena no para-brisa.</li>
+          </ul>
+          <a class="btn btn--accent" id="kitLink" href="#" target="_blank" rel="noopener">Ver o kit completo</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="section__head"><div><h2>Antes de comprar</h2></div></div>
+        <div class="faq">
+          <details><summary>Onde eu finalizo a compra?</summary><p>No Mercado Livre. Cada botão "Comprar" abre o anúncio oficial da OrbitX, com pagamento, frete e garantia do Mercado Livre.</p></details>
+          <details><summary>Os suportes servem no meu carro?</summary><p>Há versões para painel curto e longo, além de modelos testados em Hilux e Creta. Confira a compatibilidade na descrição de cada anúncio.</p></details>
+          <details><summary>Preciso furar o painel?</summary><p>Não. Os suportes da OrbitX fixam com ventosas, e as películas são adesivas.</p></details>
+          <details><summary>Funciona com a Starlink Mini G5?</summary><p>Sim, há uma película específica para a 5ª geração da Starlink Mini.</p></details>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta">
+      <div class="wrap cta__box">
+        <div>
+          <h2>Toda a linha OrbitX no Mercado Livre</h2>
+          <p>Acompanhe a loja para ver lançamentos e ofertas.</p>
+        </div>
+        <a class="btn btn--accent" id="ctaLink" href="#" target="_blank" rel="noopener">Abrir a loja <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer__row">
+      <div>
+        <img class="footer__logo" src="img/logo-orbitx.svg" alt="OrbitX Technology" width="136" height="44">
+        <p>Conectando você ao mundo.</p>
+      </div>
+      <p class="footer__legal">Site de demonstração. Starlink é marca de seus respectivos titulares e é citada apenas para indicar compatibilidade. Preços e disponibilidade conforme o Mercado Livre.</p>
+    </div>
+  </footer>
+
+  <script src="products.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+services:
+  orbitx-site:
+    build: .
+    image: orbitx-site:latest
+    container_name: orbitx-site
+    restart: unless-stopped
+    mem_limit: 64m
+    cpus: 0.25
+    networks: [borda]
+networks:
+  borda:
+    external: true
+    name: ${BORDA_NETWORK:-borda}
