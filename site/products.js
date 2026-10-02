@@ -40,7 +40,7 @@ window.ORBITX_PRODUCTS = [
   {
     id: 7, cat: "suportes", img: "img/p7.webp",
     title: "Suporte de Painel Starlink Mini com Ventosas (Hilux, Creta)",
-    old: 150.00, price: 88.27, installments: "3x R$ 29,42 sem juros",
+    old: 150.00, price: 88.27, installments: "3x de R$ 29,42 sem juros",
     url: "https://www.mercadolivre.com.br/suporte-de-painel-starlink-mini-ventosas-hilux-creta/up/MLBU4693485067?pdp_filters=item_id%3AMLB7406191058"
   },
   {
@@ -57,8 +57,8 @@ window.ORBITX_PRODUCTS = [
   },
   {
     id: 10, cat: "acessorios", img: "img/p10.webp",
-    title: "Organizador Suporte de Cabo para Carregador de Carro Elétrico (Wallbox)",
-    old: 199.00, price: 89.24, installments: "3x R$ 29,75 sem juros",
+    title: "Organizador de Cabo para Carregador de Carro Elétrico (Wallbox)",
+    old: 199.00, price: 89.24, installments: "3x de R$ 29,75 sem juros",
     url: "https://www.mercadolivre.com.br/organizador-suporte-cabo-carregador-carro-eletrico-wallbox/up/MLBU4503158528?pdp_filters=item_id%3AMLB7284321546"
   }
 ];
