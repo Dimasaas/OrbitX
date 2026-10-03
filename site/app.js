@@ -6,6 +6,7 @@
   const fold = (s) => s.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "");
   const byId = (id) => products.find((p) => p.id === id);
   const previa = window.ORBITX_PREVIA === true;
+  root.toggleAttribute("data-previa", previa);
   const obra = (pagina) => "em-construcao.html?pagina=" + pagina;
   const productUrl = (p) => (previa ? obra("produto") : p.url);
   const linkAttrs = previa ? "" : ' target="_blank" rel="noopener"';

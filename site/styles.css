@@ -329,3 +329,7 @@ input { caret-color: var(--accent-text); }
 .obra__bar span { display: block; width: 30%; height: 100%; border-radius: 999px; background: var(--accent); }
 .obra__foot { background: #141716; color: #8a9186; font-size: .8125rem; }
 .obra__foot .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding-top: 22px; padding-bottom: 22px; }
+
+/* Prévia enxuta (canvas "Loja: prévia, home enxuta"): só cabeçalho, topo, produtos, aviso e rodapé */
+[data-previa] .so-completa { display: none !important; }
+[data-previa] #ofertas { padding-top: 72px; }
