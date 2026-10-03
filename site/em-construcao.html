@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Em construção | OrbitX</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#f9f5ee">
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+  <script>
+    try { var t = localStorage.getItem("orbitx-tema"); if (t === "dark" || t === "light") document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="obra">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></symbol>
+    <symbol id="i-obra" viewBox="0 0 24 24"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 21v-6h6v6M5 13h14M12 4v17"/></symbol>
+  </svg>
+
+  <header class="header header--obra">
+    <div class="wrap header__row">
+      <a class="logo" href="./" aria-label="OrbitX Technology, página inicial">
+        <img class="logo--claro" src="img/logo-orbitx-claro.svg" alt="OrbitX Technology" width="152" height="49">
+        <img class="logo--escuro" src="img/logo-orbitx.svg" alt="" width="152" height="49">
+      </a>
+      <div class="header__tools">
+        <div class="theme" role="group" aria-label="Aparência do site">
+          <button type="button" class="theme__opt" data-theme-set="light" aria-pressed="true"><svg class="ico"><use href="#i-sun"/></svg><span>Claro</span></button>
+          <button type="button" class="theme__opt" data-theme-set="dark" aria-pressed="false"><svg class="ico"><use href="#i-moon"/></svg><span>Escuro</span></button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="obra__main">
+    <div class="obra__box">
+      <span class="obra__icon"><svg class="ico"><use href="#i-obra"/></svg></span>
+      <span class="obra__chip"><span class="dot"></span><span id="pagina">Página do produto</span></span>
+      <h1>Esta página está <span>em construção.</span></h1>
+      <p>A loja OrbitX está sendo montada por partes. A página inicial já está pronta, e esta aqui chega nas próximas etapas.</p>
+      <div class="obra__progress" aria-hidden="true">
+        <div><span>Página inicial pronta</span><span>Demais páginas a seguir</span></div>
+        <span class="obra__bar"><span></span></span>
+      </div>
+      <a class="btn btn--accent btn--lg" href="./"><svg class="ico"><use href="#i-back"/></svg>Voltar para a página inicial</a>
+    </div>
+  </main>
+
+  <footer class="obra__foot">
+    <div class="wrap"><span>© 2026 OrbitX</span><span>Loja em construção</span></div>
+  </footer>
+
+  <script>
+    (function () {
+      var nomes = { produto: "Página do produto", loja: "Loja completa", busca: "Busca", catalogo: "Catálogo" };
+      var p = new URLSearchParams(location.search).get("pagina");
+      if (nomes[p]) document.getElementById("pagina").textContent = nomes[p];
+      var root = document.documentElement, meta = document.querySelector('meta[name="theme-color"]');
+      function aplica(t) {
+        root.dataset.theme = t;
+        meta.content = t === "dark" ? "#0f1110" : "#f9f5ee";
+        document.querySelectorAll("[data-theme-set]").forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.themeSet === t); });
+      }
+      aplica(root.dataset.theme === "dark" ? "dark" : "light");
+      document.querySelectorAll("[data-theme-set]").forEach(function (b) {
+        b.addEventListener("click", function () { aplica(b.dataset.themeSet); try { localStorage.setItem("orbitx-tema", b.dataset.themeSet); } catch (e) {} });
+      });
+    })();
+  </script>
+</body>
+</html>

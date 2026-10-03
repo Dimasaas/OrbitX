@@ -5,9 +5,22 @@
   const brl = (v) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
   const fold = (s) => s.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "");
   const byId = (id) => products.find((p) => p.id === id);
+  const previa = window.ORBITX_PREVIA === true;
+  const obra = (pagina) => "em-construcao.html?pagina=" + pagina;
+  const productUrl = (p) => (previa ? obra("produto") : p.url);
+  const linkAttrs = previa ? "" : ' target="_blank" rel="noopener"';
+
+  // Na prévia, o que sai da home abre na mesma aba a página "em construção"
+  if (previa) {
+    products.forEach((p) => (p.url = productUrl(p)));
+    document.querySelectorAll("[data-store-link], [data-product-link]").forEach((a) => {
+      a.removeAttribute("target");
+      a.removeAttribute("rel");
+    });
+  }
 
   // Links para o Mercado Livre
-  document.querySelectorAll("[data-store-link]").forEach((a) => (a.href = storeUrl));
+  document.querySelectorAll("[data-store-link]").forEach((a) => (a.href = previa ? obra("loja") : storeUrl));
   document.querySelectorAll("[data-product-link]").forEach((a) => {
     const p = byId(Number(a.dataset.productLink));
     if (p) a.href = p.url;
@@ -41,18 +54,18 @@
     const off = Math.round((1 - p.price / p.old) * 100);
     return `
       <article class="card">
-        <a class="card__media" href="${p.url}" target="_blank" rel="noopener">
+        <a class="card__media" href="${p.url}"${linkAttrs}>
           <span class="card__off">-${off}%</span>
           ${p.tag ? `<span class="card__tag">${p.tag}</span>` : ""}
           <img src="${p.img}" alt="${p.title}" loading="lazy">
         </a>
         <div class="card__body">
-          <h3 class="card__title"><a href="${p.url}" target="_blank" rel="noopener">${p.title}</a></h3>
+          <h3 class="card__title"><a href="${p.url}"${linkAttrs}>${p.title}</a></h3>
           <div class="card__price"><strong>${brl(p.price)}</strong><s>${brl(p.old)}</s></div>
           <p class="card__inst">${p.installments ? "ou " + p.installments : "no Mercado Livre"}</p>
           <div class="card__actions">
-            <a class="btn btn--accent" href="${p.url}" target="_blank" rel="noopener">Ver produto</a>
-            <a class="card__cart" href="${p.url}" target="_blank" rel="noopener" aria-label="Comprar ${p.title} no Mercado Livre"><svg class="ico"><use href="#i-cart"/></svg></a>
+            <a class="btn btn--accent" href="${p.url}"${linkAttrs}>Ver produto</a>
+            <a class="card__cart" href="${p.url}"${linkAttrs} aria-label="Comprar ${p.title} no Mercado Livre"><svg class="ico"><use href="#i-cart"/></svg></a>
           </div>
         </div>
       </article>`;
@@ -86,7 +99,11 @@
     })
   );
   search.addEventListener("input", () => (search.value && filter !== "todos" ? setFilter("todos") : render()));
-  search.form.addEventListener("submit", (e) => { e.preventDefault(); toCatalog(); });
+  search.form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (previa && search.value.trim()) location.href = obra("busca");
+    else toCatalog();
+  });
   document.getElementById("clearSearch").addEventListener("click", () => { search.value = ""; render(); search.focus(); });
 
   render();

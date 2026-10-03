@@ -64,3 +64,7 @@ window.ORBITX_PRODUCTS = [
 ];
 
 window.ORBITX_STORE_URL = "https://www.mercadolivre.com.br/pagina/stvi20240514220615";
+
+// Prévia para a reunião: só a home navega e o resto abre "em construção".
+// Para voltar à loja completa, troque para false (ou use a tag `loja-completa`).
+window.ORBITX_PREVIA = true;
