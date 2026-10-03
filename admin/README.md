@@ -10,6 +10,16 @@ OrbitX Loja) e segue as cores e fontes da loja, com modo claro e escuro.
 - As alterações ficam salvas no navegador (localStorage). "Restaurar dados" no menu volta ao início.
 - Login de demonstração: qualquer senha.
 
+## Modo prévia e modo completo
+
+O arquivo `config.js` escolhe o modo:
+
+- `modo: "previa"` (padrão agora): versão para apresentar à OrbitX. Só Painel e Produtos funcionam, sem
+  nenhum dado; Home e banners, Templates e Aparência saem do menu; o resto aparece desativado como "Em breve".
+- `modo: "completo"`: o painel inteiro com dados de demonstração.
+
+Cada modo guarda o que for editado em um espaço separado do navegador.
+
 Para abrir localmente:
 
 ```sh

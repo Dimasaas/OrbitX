@@ -3,7 +3,18 @@
 (function () {
   "use strict";
 
-  const KEY = "orbitx-admin-v1";
+  // Modo do painel: "previa" (só Painel e Produtos, sem dados) ou "completo". Definido em config.js.
+  const PREVIA = ((window.ORBITX_ADMIN || {}).modo || "completo") === "previa";
+  const LIVE = ["painel", "produtos"];
+  const HIDDEN = ["home", "templates", "aparencia"];
+  const enabled = (id) => !PREVIA || LIVE.includes(id);
+  const USER = PREVIA ? { name: "Equipe OrbitX", short: "OX", role: "Administrador", email: "admin@orbitx.com.br" } : { name: "Marina Souza", short: "MS", role: "Administradora", email: "marina@orbitx.com.br" };
+  const KEY = PREVIA ? "orbitx-admin-previa-v1" : "orbitx-admin-v1";
+  const fresh = () => {
+    const d = clone(window.ORBITX_SEED);
+    if (PREVIA) ["products", "customers", "orders", "reviews", "coupons", "pages", "activity", "stockMoves", "gallery", "affiliates", "banned", "apiKeys", "webhooks"].forEach((k) => (d[k] = []));
+    return d;
+  };
   const clone = (o) => JSON.parse(JSON.stringify(o));
   const store = {
     get(k) { try { return localStorage.getItem(k); } catch (_) { return null; } },
@@ -13,7 +24,7 @@
 
   let S;
   try { S = JSON.parse(store.get(KEY)) || null; } catch (_) { S = null; }
-  if (!S || S.version !== 2) S = Object.assign({ version: 2, theme: null, logged: false }, clone(window.ORBITX_SEED));
+  if (!S || S.version !== 2) S = Object.assign({ version: 2, theme: null, logged: false }, fresh());
   const save = () => store.set(KEY, JSON.stringify(S));
   const TODAY = new Date(S.today);
 
@@ -34,7 +45,7 @@
   const cust = (id) => S.customers.find((c) => c.id === +id);
   const initials = (n) => n.split(" ").map((x) => x[0]).slice(0, 2).join("").toUpperCase();
   const stars = (n) => "★★★★★".slice(0, n) + "☆☆☆☆☆".slice(0, 5 - n);
-  const log = (text) => { S.activity.unshift({ at: nowIso(), who: "Marina Souza", text }); S.activity = S.activity.slice(0, 60); };
+  const log = (text) => { S.activity.unshift({ at: nowIso(), who: USER.name, text }); S.activity = S.activity.slice(0, 60); };
   const valid = (o) => o.status !== "Cancelado" && o.status !== "Aguardando pagamento";
 
   const ORDER_ST = { "Aguardando pagamento": "warn", "Pago": "ok", "Em separação": "info", "Enviado": "info", "Entregue": "neutral", "Cancelado": "bad" };
@@ -106,13 +117,14 @@
 
   function shell(section, inner) {
     const c = counts();
-    const nav = NAV.map(([g, items]) => `<nav class="nav-group" aria-label="${g}"><span>${g}</span>${items.map(([id, label, icon, badge]) =>
-      `<a class="nav-link${section === id ? " on" : ""}" href="#/${id}"${section === id ? ' aria-current="page"' : ""}><span>${ico(icon)}${label}</span>${badge && c[badge] ? `<b class="badge${badge === "beta" ? " badge--beta" : ""}">${c[badge]}</b>` : ""}</a>`).join("")}</nav>`).join("");
+    const nav = NAV.map(([g, items]) => `<nav class="nav-group" aria-label="${g}"><span>${g}</span>${items.filter(([id]) => !PREVIA || !HIDDEN.includes(id)).map(([id, label, icon, badge]) => !enabled(id)
+      ? `<span class="nav-link off" aria-disabled="true" title="Disponível em breve"><span>${ico(icon)}${label}</span><b class="badge badge--soon">Em breve</b></span>`
+      : `<a class="nav-link${section === id ? " on" : ""}" href="#/${id}"${section === id ? ' aria-current="page"' : ""}><span>${ico(icon)}${label}</span>${badge && c[badge] && !PREVIA ? `<b class="badge${badge === "beta" ? " badge--beta" : ""}">${c[badge]}</b>` : ""}</a>`).join("")}</nav>`).join("");
     return `<div class="shell">
       <aside class="side" id="side">
         <a class="brand" href="#/painel"><img src="img/${isDark() ? "logo-escuro" : "logo-claro"}.svg" alt="OrbitX Technology" width="100" height="32"><span class="pill-admin">Admin</span></a>
         ${nav}
-        <p class="demo-note">Demonstração com dados fictícios. As alterações ficam salvas neste navegador. <button type="button" data-act="reset">Restaurar dados</button></p>
+        ${PREVIA ? "" : `<p class="demo-note">Demonstração com dados fictícios. As alterações ficam salvas neste navegador. <button type="button" data-act="reset">Restaurar dados</button></p>`}
       </aside>
       <div class="main">
         <header class="top">
@@ -120,7 +132,7 @@
           <div class="search-global" role="search">
             ${ico("search")}
             <label class="sr" for="q">Buscar no painel</label>
-            <input id="q" type="search" placeholder="Buscar pedido, produto ou cliente" autocomplete="off">
+            <input id="q" type="search" placeholder="${PREVIA ? "Buscar produto" : "Buscar pedido, produto ou cliente"}" autocomplete="off">
             <div class="search-results" id="qres" hidden></div>
           </div>
           <div class="top-right">
@@ -129,7 +141,7 @@
               <button type="button" data-act="theme" data-v="escuro" aria-pressed="${isDark()}">Escuro</button>
             </div>
             <a class="btn" href="../" target="_blank" rel="noopener">${ico("ext")}Ver loja</a>
-            <div class="me"><span class="avatar">MS</span><div><b>Marina Souza</b><small>Administradora</small></div></div>
+            <div class="me"><span class="avatar">${USER.short}</span><div><b>${USER.name}</b><small>${USER.role}</small></div></div>
             <button class="btn btn--icon" type="button" data-act="logout" aria-label="Sair">${ico("logout")}</button>
           </div>
         </header>
@@ -207,6 +219,20 @@
       </div>
       <section class="card"><div class="card-head"><h2>Atividade da equipe</h2><a href="#/config?tab=atividade">Ver tudo</a></div>
         <ul class="timeline">${S.activity.slice(0, 5).map((a) => `<li><div><b>${e(a.who)}</b> ${e(a.text.charAt(0).toLowerCase() + a.text.slice(1))}<small>${dt(a.at)}</small></div></li>`).join("")}</ul></section>`;
+  };
+
+  V.painelPrevia = () => {
+    const n = S.products.length, act = S.products.filter((p) => p.status === "ativo").length;
+    const empty = (txt, cta) => `<div class="empty" style="padding:28px 20px">${txt}${cta ? `<div style="margin-top:14px">${cta}</div>` : ""}</div>`;
+    return head("Olá, equipe OrbitX", n ? `${n} produto(s) cadastrado(s)` : "A loja está pronta para receber os primeiros produtos.", `<a class="btn btn--accent" href="#/produtos/novo">+ Novo produto</a>`) +
+      `<div class="grid-kpi">${[["Receita", "R$ 0,00", "Sem vendas"], ["Pedidos", "0", "Sem vendas"], ["Ticket médio", "R$ 0,00", "Sem vendas"], ["Produtos ativos", String(act), n ? n + " no catálogo" : "Cadastre o primeiro"]].map(([l, v, d]) => `<div class="card kpi"><span>${l}</span><b>${v}</b><span class="soft">${d}</span></div>`).join("")}</div>
+      <div class="grid-2">
+        <section class="card card-pad"><div class="head"><h2>Vendas por dia</h2><span class="soft">Receita em R$</span></div><div class="chart" style="align-items:center;justify-content:center"><p class="muted" style="text-align:center;max-width:320px;margin:0">As vendas aparecem aqui assim que a loja receber o primeiro pedido.</p></div></section>
+        <section class="card"><div class="card-head"><h2>Produtos</h2>${n ? `<a href="#/produtos">Ver todos</a>` : ""}</div>
+          ${n ? `<div class="list-plain">${S.products.slice(-5).reverse().map((p) => `<div><img class="thumb" src="${e(p.img)}" alt=""><a class="grow" href="#/produtos/${p.id}" style="text-decoration:none;font-weight:600">${e(p.title)}</a><b class="num">${brl(p.price)}</b></div>`).join("")}</div>` : empty("Nenhum produto cadastrado ainda.", `<a class="btn btn--accent" href="#/produtos/novo">Cadastrar produto</a>`)}
+        </section>
+      </div>
+      <section class="card"><div class="card-head"><h2>Pedidos recentes</h2></div>${empty("Ainda não há pedidos.")}</section>`;
   };
 
   function topProducts(days) {
@@ -328,7 +354,7 @@
           <td class="r num">${p.stock} ${p.stock < p.min ? stockSt(p) : ""}</td>
           <td class="r num">${sold[p.id] || 0}</td>
           <td>${st(p.status, p.status === "ativo" ? "ok" : p.status === "rascunho" ? "warn" : "neutral")}</td>
-          <td class="r"><button class="btn btn--sm" type="button" data-act="dup-product" data-id="${p.id}">Duplicar</button></td></tr>`).join("") || `<tr><td colspan="8" class="empty">Nenhum produto encontrado.</td></tr>`}
+          <td class="r"><button class="btn btn--sm" type="button" data-act="dup-product" data-id="${p.id}">Duplicar</button></td></tr>`).join("") || `<tr><td colspan="8" class="empty">${S.products.length ? "Nenhum produto encontrado." : `Nenhum produto cadastrado ainda.<div style="margin-top:14px"><a class="btn btn--accent" href="#/produtos/novo">Cadastrar o primeiro produto</a></div>`}</td></tr>`}
         </tbody></table></div>
       </section>`;
   };
@@ -338,7 +364,7 @@
     const isNew = !p;
     p = p || { id: 0, sku: "", cat: "suportes", img: "img/p5.webp", title: "", old: 0, price: 0, cost: 0, stock: 0, min: 5, weight: 0, dims: "", status: "rascunho", slug: "", description: "", seoTitle: "", seoDescription: "", featured: false, variants: [], url: "", tag: "" };
     const margin = p.price ? ((p.price - p.cost) / p.price) * 100 : 0;
-    const imgs = S.products.map((x) => x.img).filter((v, i, a) => a.indexOf(v) === i);
+    const imgs = window.ORBITX_SEED.products.map((x) => x.img).filter((v, i, a) => a.indexOf(v) === i);
     return head(isNew ? "Novo produto" : p.title, isNew ? "Preencha os dados e salve como rascunho ou publique." : `${e(p.sku)} · criado no catálogo OrbitX`,
       `${!isNew ? `<button class="btn btn--danger" type="button" data-act="del-product" data-id="${p.id}">${ico("trash")}Excluir</button>` : ""}<button class="btn btn--accent" type="submit" form="pform">Salvar produto</button>`, ["#/produtos", "Produtos"]) +
       `<form id="pform" class="grid-form" data-form="product" data-id="${p.id}">
@@ -745,9 +771,9 @@
   const notFound = () => head("Não encontrado", "Esse item não existe ou foi excluído.", `<a class="btn" href="#/painel">Voltar ao painel</a>`);
 
   function login() {
-    return `<div class="login"><div class="login-art"><img src="img/logo-escuro.svg" alt="OrbitX Technology" style="height:44px;width:auto"><div><h2>Toda a loja <span>em um painel só.</span></h2><p>Pedidos, estoque, produtos, páginas e campanhas da OrbitX. Esta é uma demonstração com dados fictícios.</p></div><small style="color:#8d948a">Painel OrbitX · demonstração</small></div>
-      <div class="login-form"><form class="form" data-form="login"><h1>Entrar no painel</h1><p class="muted" style="margin:0">Use os dados já preenchidos. Qualquer senha funciona na demonstração.</p>
-        <div class="field"><label for="le">E-mail</label><input id="le" class="input" type="email" value="marina@orbitx.com.br" required autocomplete="username"></div>
+    return `<div class="login"><div class="login-art"><img src="img/logo-escuro.svg" alt="OrbitX Technology" style="height:44px;width:auto"><div><h2>Toda a loja <span>em um painel só.</span></h2><p>Pedidos, estoque, produtos, páginas e campanhas da OrbitX.${PREVIA ? "" : " Esta é uma demonstração com dados fictícios."}</p></div><small style="color:#8d948a">Painel OrbitX${PREVIA ? "" : " · demonstração"}</small></div>
+      <div class="login-form"><form class="form" data-form="login"><h1>Entrar no painel</h1>${PREVIA ? "" : `<p class="muted" style="margin:0">Use os dados já preenchidos. Qualquer senha funciona na demonstração.</p>`}
+        <div class="field"><label for="le">E-mail</label><input id="le" class="input" type="email" value="${USER.email}" required autocomplete="username"></div>
         <div class="field"><label for="lp">Senha</label><input id="lp" class="input" type="password" value="demonstracao" required autocomplete="current-password"></div>
         <button class="btn btn--accent" type="submit" style="min-height:46px">Entrar</button></form></div></div>`;
   }
@@ -761,8 +787,10 @@
     const hash = location.hash.replace(/^#\/?/, "") || "painel";
     const [path, query] = hash.split("?");
     const [section, id] = path.split("/");
-    const view = V[section] || V.painel;
-    const sec = V[section] ? section : "painel";
+    const ok = V[section] && enabled(section);
+    if (V[section] && !ok) { location.replace("#/painel"); return; }
+    const sec = ok ? section : "painel";
+    const view = PREVIA && sec === "painel" ? V.painelPrevia : V[sec];
     app.innerHTML = shell(sec, view(id, new URLSearchParams(query || "")));
     const h1 = $("h1", app);
     document.title = (h1 ? h1.textContent + " · " : "") + "OrbitX Admin";
@@ -802,13 +830,13 @@
 
   // ---------- ações ----------
   const selected = (kind) => [...document.querySelectorAll(`[data-sel="${kind}"]:checked`)].map((x) => +x.value);
-  const setOrderStatus = (o, s) => { if (o.status === s) return; o.status = s; o.history.push({ at: nowIso(), text: "Status alterado para " + s + " por Marina Souza" }); };
+  const setOrderStatus = (o, s) => { if (o.status === s) return; o.status = s; o.history.push({ at: nowIso(), text: "Status alterado para " + s + " por " + USER.name }); };
 
   const ACT = {
     menu: () => $("#side").classList.toggle("open"),
     theme: (el) => { S.theme = el.dataset.v; save(); rerender(); },
     logout: () => { S.logged = false; save(); route(); },
-    reset: () => { if (confirm("Restaurar todos os dados de demonstração? As alterações feitas neste navegador serão perdidas.")) { store.del(KEY); S = Object.assign({ version: 2, theme: S.theme, logged: true }, clone(window.ORBITX_SEED)); save(); route(); toast("Dados de demonstração restaurados"); } },
+    reset: () => { if (confirm("Restaurar todos os dados de demonstração? As alterações feitas neste navegador serão perdidas.")) { store.del(KEY); S = Object.assign({ version: 2, theme: S.theme, logged: true }, fresh()); save(); route(); toast("Dados de demonstração restaurados"); } },
     range: (el) => { S.ui = { range: +el.dataset.v }; save(); rerender(); },
     close: closeModal,
     print: () => window.print(),
@@ -847,8 +875,8 @@
     "edit-ship": (el) => { const s = el.dataset.id ? S.shipping.find((x) => x.id === +el.dataset.id) : null; modal(s ? "Editar " + s.name : "Nova forma de envio", fld("name", "Nome", s && s.name, "text", "required") + fld("region", "Região atendida", s ? s.region : "Brasil") + `<div class="row">${fld("price", "Preço", s ? s.price : "R$ 0,00")}${fld("days", "Prazo", s ? s.days : "")}</div>`, (fd) => { const d = { name: fd.get("name"), region: fd.get("region"), price: fd.get("price"), days: fd.get("days") }; if (s) Object.assign(s, d); else S.shipping.push({ id: Date.now(), on: true, ...d }); toast("Forma de envio salva"); }); },
     invite: () => modal("Convidar para a equipe", fld("name", "Nome", "", "text", "required") + fld("email", "E-mail", "", "email", "required") + `<div class="field"><label for="m-role">Função</label><select id="m-role" name="role" class="input">${Object.keys(S.roles).map((r) => `<option>${r}</option>`).join("")}</select></div>`, (fd) => { S.team.push({ id: Date.now(), name: fd.get("name"), email: fd.get("email"), role: fd.get("role"), last: "", on: true }); log("Convidou " + fd.get("name") + " como " + fd.get("role")); toast("Convite enviado (simulado)"); }, "Enviar convite"),
 
-    "ban-customer": (el) => { const c = cust(el.dataset.id); if (!confirm(`Banir ${c.name}? O e-mail ${c.email} não conseguirá mais comprar no site.`)) return; S.banned.unshift({ id: Date.now(), kind: "E-mail", value: c.email, reason: "Banido pelo cadastro do cliente", at: nowIso(), who: "Marina Souza" }); log("Baniu o cliente " + c.name); save(); rerender(); toast(c.name + " banido"); },
-    "edit-ban": () => modal("Bloquear", `<div class="field"><label for="m-kind">Tipo</label><select id="m-kind" name="kind" class="input"><option>E-mail</option><option>CPF</option><option>Telefone</option><option>IP</option></select></div>` + fld("value", "Valor", "", "text", "required") + fld("reason", "Motivo", "", "text", "required"), (fd) => { S.banned.unshift({ id: Date.now(), kind: fd.get("kind"), value: fd.get("value").trim(), reason: fd.get("reason"), at: nowIso(), who: "Marina Souza" }); log("Bloqueou " + fd.get("kind").toLowerCase() + " " + fd.get("value")); toast("Bloqueio adicionado"); }, "Bloquear"),
+    "ban-customer": (el) => { const c = cust(el.dataset.id); if (!confirm(`Banir ${c.name}? O e-mail ${c.email} não conseguirá mais comprar no site.`)) return; S.banned.unshift({ id: Date.now(), kind: "E-mail", value: c.email, reason: "Banido pelo cadastro do cliente", at: nowIso(), who: USER.name }); log("Baniu o cliente " + c.name); save(); rerender(); toast(c.name + " banido"); },
+    "edit-ban": () => modal("Bloquear", `<div class="field"><label for="m-kind">Tipo</label><select id="m-kind" name="kind" class="input"><option>E-mail</option><option>CPF</option><option>Telefone</option><option>IP</option></select></div>` + fld("value", "Valor", "", "text", "required") + fld("reason", "Motivo", "", "text", "required"), (fd) => { S.banned.unshift({ id: Date.now(), kind: fd.get("kind"), value: fd.get("value").trim(), reason: fd.get("reason"), at: nowIso(), who: USER.name }); log("Bloqueou " + fd.get("kind").toLowerCase() + " " + fd.get("value")); toast("Bloqueio adicionado"); }, "Bloquear"),
     unban: (el) => { const b = S.banned.find((x) => x.id === +el.dataset.id); if (!confirm("Desbloquear " + b.value + "?")) return; S.banned = S.banned.filter((x) => x !== b); log("Desbloqueou " + b.value); save(); rerender(); toast("Desbloqueado"); },
     media: (el) => { const g = S.gallery.find((x) => x.id === +el.dataset.id); modal(g.name, `<img src="${e(g.src)}" alt="${e(g.alt)}" style="max-height:260px;margin:0 auto;background:#fff;border-radius:12px;padding:10px;border:1px solid var(--line)"><div class="row"><div><span class="label">Tamanho</span><br>${kb(g.size)}</div><div><span class="label">Dimensões</span><br>${g.w} × ${g.h} px</div><div><span class="label">Enviada</span><br>${dfull(g.at)}</div></div>` + fld("alt", "Texto alternativo (acessibilidade e Google)", g.alt) + `<div class="field"><label for="m-folder">Pasta</label><select id="m-folder" name="folder" class="input">${["Produtos", "Banners", "Marca", "Páginas"].map((x) => `<option${g.folder === x ? " selected" : ""}>${x}</option>`).join("")}</select></div><div><span class="label">Usada em</span><br>${e(g.used.join(", ") || "Nenhum lugar")}</div><div><button class="btn btn--sm btn--danger" type="button" data-act="del-media" data-id="${g.id}">${ico("trash")}Excluir imagem</button></div>`, (fd) => { g.alt = fd.get("alt"); g.folder = fd.get("folder"); toast("Imagem atualizada"); }); },
     "del-media": (el) => { const g = S.gallery.find((x) => x.id === +el.dataset.id); if (g.used.length && !confirm(`${g.name} está em uso (${g.used.join(", ")}). Excluir mesmo assim?`)) return; S.gallery = S.gallery.filter((x) => x !== g); closeModal(); save(); rerender(); toast("Imagem excluída"); },
@@ -918,7 +946,7 @@
       const nid = Math.max(0, ...S.products.map((p) => p.id)) + 1;
       S.products.push({ id: nid, ...d }); log("Criou o produto " + d.title); save(); location.hash = "#/produtos/" + nid; toast("Produto criado"); return false;
     },
-    stock: (f, fd, ev) => { const p = prod(f.dataset.id); const dir = +(ev.submitter ? ev.submitter.value : 1); const q = Math.abs(+fd.get("qty") || 0) * dir; if (!q) return false; p.stock = Math.max(0, p.stock + q); S.stockMoves.unshift({ at: nowIso(), pid: p.id, qty: q, reason: fd.get("reason"), who: "Marina Souza" }); log(`${q > 0 ? "Entrada" : "Saída"} de ${Math.abs(q)} un. de ${p.title}`); return `Estoque de ${p.sku}: ${p.stock} un.`; },
+    stock: (f, fd, ev) => { const p = prod(f.dataset.id); const dir = +(ev.submitter ? ev.submitter.value : 1); const q = Math.abs(+fd.get("qty") || 0) * dir; if (!q) return false; p.stock = Math.max(0, p.stock + q); S.stockMoves.unshift({ at: nowIso(), pid: p.id, qty: q, reason: fd.get("reason"), who: USER.name }); log(`${q > 0 ? "Entrada" : "Saída"} de ${Math.abs(q)} un. de ${p.title}`); return `Estoque de ${p.sku}: ${p.stock} un.`; },
     customer: (f, fd) => { const c = cust(f.dataset.id); Object.assign(c, { name: fd.get("name"), email: fd.get("email"), phone: fd.get("phone"), address: fd.get("address"), notes: fd.get("notes"), newsletter: fd.get("newsletter") === "on", tags: fd.get("tags").split(",").map((x) => x.trim()).filter(Boolean) }); return "Cliente salvo"; },
     home: (f, fd) => { const h = S.home; h.topbar = { on: fd.get("topOn") === "on", text: fd.get("topText") }; Object.assign(h.hero, { kicker: fd.get("kicker"), title: fd.get("title"), text: fd.get("text"), cta: fd.get("cta"), ctaLink: fd.get("ctaLink"), img: fd.get("img") }); log("Publicou alterações na home"); return "Home publicada"; },
     page: (f, fd, ev) => {

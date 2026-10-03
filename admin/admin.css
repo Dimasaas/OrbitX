@@ -18,6 +18,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html, body { margin: 0; }
 body { background: var(--bg); color: var(--text); font: 14px/1.5 var(--body); -webkit-font-smoothing: antialiased; transition: background-color .3s, color .3s; }
 a { color: inherit; }
@@ -41,7 +42,10 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .brand img { height: 32px; width: auto; }
 .pill-admin { font: 700 11px var(--body); letter-spacing: .1em; text-transform: uppercase; color: var(--accent-ink); background: var(--accent); padding: 3px 8px; border-radius: 999px; }
 .nav-group { display: flex; flex-direction: column; gap: 2px; }
-.nav-group > span { font-weight: 700; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--soft); padding: 0 10px 6px; }
+.nav-group > span:not(.nav-link) { font-weight: 800; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--text); padding: 0 10px 6px; }
+.nav-link.off { opacity: .5; cursor: not-allowed; }
+.nav-link.off:hover { background: none; color: var(--muted); }
+.badge.badge--soon { white-space: nowrap; background: none; border: 1px solid var(--line-strong); color: var(--soft); font-size: 10px; padding: 1px 7px; }
 .nav-link { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 38px; padding: 0 10px; border-radius: 10px; text-decoration: none; font-weight: 600; color: var(--muted); }
 .nav-link:hover { color: var(--text); background: var(--paper); }
 .nav-link.on { background: var(--wash); color: var(--accent-text); }
