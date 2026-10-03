@@ -1,0 +1,21 @@
+# Site de demonstração da OrbitX — nginx:alpine estático.
+# Fica pendurado na rede do proxy de borda (`infra_default`) com o apelido
+# `orbitx`; quem publica 80/443 é o `caddy-borda` (rota orbitax.duckdns.org).
+name: orbitx
+
+services:
+  site:
+    build: .
+    image: orbitx-site:latest
+    container_name: orbitx-site
+    restart: unless-stopped
+    mem_limit: 64m
+    cpus: 0.25
+    networks:
+      borda:
+        aliases: [orbitx]
+
+networks:
+  borda:
+    external: true
+    name: infra_default
