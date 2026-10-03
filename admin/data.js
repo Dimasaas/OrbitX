@@ -263,5 +263,73 @@
     ]
   };
 
-  window.ORBITX_SEED = { today: TODAY.toISOString(), categories, products, customers, orders, reviews, coupons, pages, home, menu, shipping, freeShippingMin, paymentMethods, team, roles, activity, stockMoves, store };
+
+  // Galeria de mídia: imagens dos produtos, logos e banners já enviados.
+  const gallery = products.map((p, i) => ({ id: 100 + i, src: p.img, name: p.img.replace("img/", ""), alt: p.title, size: [14882, 12586, 10132, 7848, 27860, 29128, 29484, 36170, 28514, 27684][i], w: 800, h: 800, folder: "Produtos", at: new Date(TODAY.getTime() - (40 - i * 3) * 864e5).toISOString(), used: ["Produto #" + p.id] }))
+    .concat([
+      { id: 120, src: "img/logo-claro.svg", name: "logo-claro.svg", alt: "OrbitX Technology", size: 46652, w: 3040, h: 980, folder: "Marca", at: "2026-09-02T10:00:00-03:00", used: ["Cabeçalho"] },
+      { id: 121, src: "img/logo-escuro.svg", name: "logo-escuro.svg", alt: "OrbitX Technology", size: 46652, w: 3040, h: 980, folder: "Marca", at: "2026-09-02T10:00:00-03:00", used: ["Rodapé", "E-mails"] },
+      { id: 122, src: "img/favicon.svg", name: "favicon.svg", alt: "Ícone OrbitX", size: 240, w: 64, h: 64, folder: "Marca", at: "2026-09-02T10:00:00-03:00", used: ["Favicon"] }
+    ]);
+
+  const affiliates = [
+    { id: 1, name: "Canal Rota 4x4", type: "YouTuber", email: "contato@rota4x4.com.br", code: "ROTA4X4", rate: 10, clicks: 4820, sales: 61, status: "ativo", paid: 412.3, since: "2026-05-10" },
+    { id: 2, name: "Overland Brasil", type: "Instagram", email: "parcerias@overlandbr.com.br", code: "OVERLAND", rate: 8, clicks: 2915, sales: 34, status: "ativo", paid: 198.4, since: "2026-06-22" },
+    { id: 3, name: "Estrada de Terra Podcast", type: "Podcast", email: "oi@estradadeterra.fm", code: "TERRA", rate: 10, clicks: 1104, sales: 12, status: "ativo", paid: 74.9, since: "2026-07-15" },
+    { id: 4, name: "Clube Hilux Goiás", type: "Clube de carro", email: "diretoria@hiluxgo.org", code: "HILUXGO", rate: 7, clicks: 860, sales: 19, status: "ativo", paid: 103.2, since: "2026-08-01" },
+    { id: 5, name: "Nômades Digitais SC", type: "Blog", email: "contato@nomadessc.com", code: "NOMADE", rate: 8, clicks: 312, sales: 2, status: "pendente", paid: 0, since: "2026-09-28" },
+    { id: 6, name: "Promo Total Cupons", type: "Site de cupons", email: "afiliados@promototal.net", code: "PROMOTOTAL", rate: 5, clicks: 9210, sales: 3, status: "suspenso", paid: 0, since: "2026-04-03" }
+  ];
+
+  const banned = [
+    { id: 1, kind: "E-mail", value: "compras.rapidas7781@exemplo.net", reason: "Chargeback em 3 pedidos", at: "2026-09-18T14:22:00-03:00", who: "Marina Souza" },
+    { id: 2, kind: "CPF", value: "512.***.***-07", reason: "Tentativa de fraude com cartão de terceiros", at: "2026-09-02T09:10:00-03:00", who: "Marina Souza" },
+    { id: 3, kind: "IP", value: "177.43.***.19", reason: "Mais de 40 tentativas de pagamento recusadas", at: "2026-08-27T23:48:00-03:00", who: "Sistema antifraude" },
+    { id: 4, kind: "Telefone", value: "(11) 9****-0032", reason: "Abuso de cupom de primeira compra", at: "2026-08-11T16:05:00-03:00", who: "Sérgio Lopes" },
+    { id: 5, kind: "E-mail", value: "*@mailtemporario.com", reason: "Domínio de e-mail descartável", at: "2026-07-30T11:00:00-03:00", who: "Marina Souza" }
+  ];
+
+  const plugins = [
+    { id: "ml-sync", name: "Sincronizar com Mercado Livre", by: "OrbitX", desc: "Mantém preço e estoque iguais no site e nos anúncios do Mercado Livre.", cat: "Vendas", on: true, price: "Grátis" },
+    { id: "whatsapp", name: "Botão de WhatsApp", by: "Comunidade", desc: "Botão flutuante com mensagem pronta e horário de atendimento.", cat: "Atendimento", on: true, price: "Grátis" },
+    { id: "carrinho", name: "Recuperação de carrinho", by: "Parceiro", desc: "Envia e-mail e WhatsApp para quem abandonou o carrinho.", cat: "Marketing", on: false, price: "R$ 29/mês" },
+    { id: "reviews-foto", name: "Avaliações com foto", by: "Parceiro", desc: "Clientes enviam fotos do produto instalado no carro.", cat: "Marketing", on: true, price: "Grátis" },
+    { id: "frete-calc", name: "Calculadora de frete na página do produto", by: "OrbitX", desc: "Mostra prazo e valor pelo CEP antes do carrinho.", cat: "Vendas", on: true, price: "Grátis" },
+    { id: "nfe", name: "Emissão de NF-e", by: "Parceiro", desc: "Emite nota fiscal eletrônica a cada pedido pago.", cat: "Gestão", on: false, price: "R$ 49/mês" },
+    { id: "lgpd", name: "Aviso de cookies (LGPD)", by: "OrbitX", desc: "Barra de consentimento de cookies configurável.", cat: "Segurança", on: true, price: "Grátis" },
+    { id: "compat", name: "Seletor de compatibilidade por veículo", by: "Comunidade", desc: "O cliente escolhe marca e modelo e vê só o que serve.", cat: "Vendas", on: false, price: "Grátis" }
+  ];
+
+  const domains = [
+    { id: 1, host: "orbitax.duckdns.org", primary: true, ssl: "Ativo", dns: "Verificado", added: "2026-10-02" },
+    { id: 2, host: "www.orbitx.com.br", primary: false, ssl: "Ativo", dns: "Verificado", added: "2026-09-15" },
+    { id: 3, host: "loja.orbitx.com.br", primary: false, ssl: "Aguardando DNS", dns: "Pendente", added: "2026-10-01" }
+  ];
+
+  const integrations = [
+    { id: "ml", name: "Mercado Livre", desc: "Pedidos, anúncios e perguntas da loja oficial.", on: true, account: "Loja OrbitX", last: "2026-10-02T22:58:00-03:00" },
+    { id: "ga", name: "Google Analytics 4", desc: "Visitas, origem do tráfego e conversão.", on: true, account: "G-XXXXXXX (fictício)", last: "2026-10-02T23:00:00-03:00" },
+    { id: "meta", name: "Pixel da Meta", desc: "Anúncios no Instagram e Facebook.", on: true, account: "Pixel 0000000 (fictício)", last: "2026-10-02T21:40:00-03:00" },
+    { id: "gmc", name: "Google Merchant Center", desc: "Produtos no Google Shopping.", on: false, account: "", last: "" },
+    { id: "melhorenvio", name: "Melhor Envio", desc: "Cotação e etiquetas dos Correios e transportadoras.", on: true, account: "expedicao@orbitx.com.br", last: "2026-10-02T17:20:00-03:00" },
+    { id: "bling", name: "Bling ERP", desc: "Estoque, notas fiscais e financeiro.", on: false, account: "", last: "" },
+    { id: "mailchimp", name: "Mailchimp", desc: "Newsletter e campanhas de e-mail.", on: false, account: "", last: "" }
+  ];
+  const apiKeys = [
+    { id: 1, name: "Aplicativo da expedição", key: "ox_live_••••••••3f9a", created: "2026-08-20", last: "2026-10-02T17:20:00-03:00" },
+    { id: 2, name: "Planilha de relatórios", key: "ox_live_••••••••a71c", created: "2026-09-05", last: "2026-10-01T08:00:00-03:00" }
+  ];
+  const webhooks = [
+    { id: 1, event: "Pedido pago", url: "https://exemplo.orbitx.com.br/hooks/pedido-pago", on: true },
+    { id: 2, event: "Estoque baixo", url: "https://exemplo.orbitx.com.br/hooks/estoque", on: true }
+  ];
+
+  const templates = [
+    { id: "orbita", name: "Órbita", desc: "O visual atual: verde OrbitX, claro e escuro, foco em produto.", colors: ["#8be41c", "#f9f5ee", "#0f1110"], active: true },
+    { id: "estrada", name: "Estrada", desc: "Fotos grandes de viagem e chamadas fortes. Bom para campanhas.", colors: ["#f59e0b", "#fffaf0", "#1f1a14"], active: false },
+    { id: "minimo", name: "Mínimo", desc: "Branco, tipografia limpa e grade de produtos densa.", colors: ["#111111", "#ffffff", "#e5e5e5"], active: false },
+    { id: "noite", name: "Céu noturno", desc: "Fundo escuro com estrelas e destaque em azul.", colors: ["#3b82f6", "#0b1020", "#e6ecff"], active: false }
+  ];
+
+  window.ORBITX_SEED = { today: TODAY.toISOString(), categories, products, customers, orders, reviews, coupons, pages, home, menu, shipping, freeShippingMin, paymentMethods, team, roles, activity, stockMoves, store, gallery, affiliates, banned, plugins, domains, integrations, apiKeys, webhooks, templates };
 })();

@@ -13,7 +13,7 @@
 
   let S;
   try { S = JSON.parse(store.get(KEY)) || null; } catch (_) { S = null; }
-  if (!S || S.version !== 1) S = Object.assign({ version: 1, theme: null, logged: false }, clone(window.ORBITX_SEED));
+  if (!S || S.version !== 2) S = Object.assign({ version: 2, theme: null, logged: false }, clone(window.ORBITX_SEED));
   const save = () => store.set(KEY, JSON.stringify(S));
   const TODAY = new Date(S.today);
 
@@ -68,7 +68,16 @@
     x: "M6 6l12 12M18 6L6 18",
     ext: "M14 4h6v6M20 4l-9 9M18 14v6H4V6h6",
     print: "M7 9V3h10v6M7 17H4v-7h16v7h-3M7 14h10v7H7z",
-    logout: "M15 4h4v16h-4M10 8l-4 4 4 4M6 12h11"
+    logout: "M15 4h4v16h-4M10 8l-4 4 4 4M6 12h11",
+    photo: "M4 5h16v14H4zM8.5 10a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3M20 15l-5-5-9 9",
+    share: "M18 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6M6 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6M18 22a3 3 0 1 0 0-6 3 3 0 0 0 0 6M8.6 13.5l6.8 4M15.4 6.5l-6.8 4",
+    ban: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18M5.6 5.6l12.8 12.8",
+    puzzle: "M10 3h4v3a2 2 0 1 0 4 0V3h3v7h-3a2 2 0 1 0 0 4h3v7h-7v-3a2 2 0 1 0-4 0v3H3v-7h3a2 2 0 1 0 0-4H3V3z",
+    globe: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18",
+    key: "M15 9a4 4 0 1 1-3.5 6L8 18.5H5.5V16H8v-2.5L11 10.5A4 4 0 0 1 15 9M16 8h.01",
+    brush: "M18 3l3 3-9 9-3-3zM9 12l-4 1-2 7 7-2 1-4",
+    copy: "M9 9h11v11H9zM5 15H4V4h11v1",
+    upload: "M12 16V4M7 9l5-5 5 5M4 20h16"
   };
   const ico = (name) => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="${I[name]}"/></svg>`;
 
@@ -84,19 +93,21 @@
   const counts = () => ({
     pedidos: S.orders.filter((o) => ["Aguardando pagamento", "Pago", "Em separação"].includes(o.status)).length,
     avaliacoes: S.reviews.filter((r) => r.status === "pendente").length,
-    estoque: S.products.filter((p) => p.stock < p.min).length
+    estoque: S.products.filter((p) => p.stock < p.min).length,
+    afiliados: S.affiliates.filter((a) => a.status === "pendente").length,
+    beta: "Beta"
   });
   const NAV = [
-    ["Loja", [["painel", "Painel", "home"], ["pedidos", "Pedidos", "bag", "pedidos"], ["produtos", "Produtos", "box"], ["estoque", "Estoque", "stock", "estoque"], ["categorias", "Categorias", "layers"], ["clientes", "Clientes", "users"], ["avaliacoes", "Avaliações", "star", "avaliacoes"]]],
-    ["Marketing", [["cupons", "Cupons e promoções", "tag"], ["relatorios", "Relatórios", "chart"]]],
-    ["Site", [["home", "Home e banners", "image"], ["paginas", "Páginas", "page"], ["menu", "Menu e rodapé", "menu"], ["aparencia", "Aparência", "palette"]]],
-    ["Configurações", [["frete", "Frete", "truck"], ["pagamentos", "Pagamentos", "card"], ["config", "Loja e equipe", "gear"]]]
+    ["Loja", [["painel", "Painel", "home"], ["pedidos", "Pedidos", "bag", "pedidos"], ["produtos", "Produtos", "box"], ["estoque", "Estoque", "stock", "estoque"], ["categorias", "Categorias", "layers"], ["galeria", "Galeria", "photo"], ["clientes", "Clientes", "users"], ["avaliacoes", "Avaliações", "star", "avaliacoes"], ["banidos", "Banidos", "ban"]]],
+    ["Marketing", [["cupons", "Cupons e promoções", "tag"], ["afiliados", "Afiliados", "share", "afiliados"], ["relatorios", "Relatórios", "chart"]]],
+    ["Site", [["home", "Home e banners", "image"], ["paginas", "Páginas", "page"], ["menu", "Menu e rodapé", "menu"], ["templates", "Templates", "brush", "beta"], ["aparencia", "Aparência", "palette"]]],
+    ["Configurações", [["plugins", "Plugins", "puzzle"], ["integracoes", "Integrações", "key"], ["dominios", "Domínios", "globe"], ["frete", "Frete", "truck"], ["pagamentos", "Pagamentos", "card"], ["config", "Loja e equipe", "gear"]]]
   ];
 
   function shell(section, inner) {
     const c = counts();
     const nav = NAV.map(([g, items]) => `<nav class="nav-group" aria-label="${g}"><span>${g}</span>${items.map(([id, label, icon, badge]) =>
-      `<a class="nav-link${section === id ? " on" : ""}" href="#/${id}"${section === id ? ' aria-current="page"' : ""}><span>${ico(icon)}${label}</span>${badge && c[badge] ? `<b class="badge">${c[badge]}</b>` : ""}</a>`).join("")}</nav>`).join("");
+      `<a class="nav-link${section === id ? " on" : ""}" href="#/${id}"${section === id ? ' aria-current="page"' : ""}><span>${ico(icon)}${label}</span>${badge && c[badge] ? `<b class="badge${badge === "beta" ? " badge--beta" : ""}">${c[badge]}</b>` : ""}</a>`).join("")}</nav>`).join("");
     return `<div class="shell">
       <aside class="side" id="side">
         <a class="brand" href="#/painel"><img src="img/${isDark() ? "logo-escuro" : "logo-claro"}.svg" alt="OrbitX Technology" width="100" height="32"><span class="pill-admin">Admin</span></a>
@@ -446,7 +457,8 @@
     const os = S.orders.filter((o) => o.cid === id);
     const ok = os.filter(valid);
     const ltv = ok.reduce((s, o) => s + o.total, 0);
-    return head(c.name, `Cliente desde ${dfull(c.since)} · ${e(c.city)}/${e(c.uf)}`, "", ["#/clientes", "Clientes"]) +
+    const isBanned = S.banned.some((b) => b.value === c.email);
+    return head(c.name, `Cliente desde ${dfull(c.since)} · ${e(c.city)}/${e(c.uf)}${isBanned ? " · " + st("Banido", "bad") : ""}`, isBanned ? "" : `<button class="btn btn--danger" type="button" data-act="ban-customer" data-id="${c.id}">${ico("ban")}Banir cliente</button>`, ["#/clientes", "Clientes"]) +
       `<div class="grid-kpi"><div class="card kpi"><span>Pedidos</span><b>${os.length}</b></div><div class="card kpi"><span>Total gasto</span><b>${brl(ltv)}</b></div><div class="card kpi"><span>Ticket médio</span><b>${brl(ok.length ? ltv / ok.length : 0)}</b></div></div>
       <div class="grid-form"><section class="card"><div class="card-head"><h2>Pedidos</h2></div><div class="table-box"><table><tbody>
         ${os.map((o) => `<tr class="row-link" data-go="#/pedidos/${o.id}"><td><b>#${o.id}</b></td><td class="muted">${dt(o.at)}</td><td>${ost(o.status)}</td><td class="r num"><b>${brl(o.total)}</b></td></tr>`).join("") || `<tr><td class="empty">Sem pedidos.</td></tr>`}
@@ -643,6 +655,93 @@
     return head("Loja e equipe", "", "") + `<div class="chips">${tabs.map(([v, l]) => `<a class="chip${tab === v ? " on" : ""}" href="#/config?tab=${v}">${l}</a>`).join("")}</div>` + body;
   };
 
+
+  // Galeria
+  const kb = (n) => n > 1024 * 1024 ? (n / 1048576).toFixed(1).replace(".", ",") + " MB" : Math.max(1, Math.round(n / 1024)) + " KB";
+  V.galeria = (id, q) => {
+    const f = q.get("p") || "Todas";
+    const folders = ["Todas", ...new Set(S.gallery.map((g) => g.folder))];
+    const list = S.gallery.filter((g) => f === "Todas" || g.folder === f);
+    const total = S.gallery.reduce((s, g) => s + g.size, 0);
+    return head("Galeria", `${S.gallery.length} arquivos · ${kb(total)} usados de 1 GB`, `<label class="btn btn--accent" for="up">${ico("upload")}Enviar imagens</label><input id="up" class="sr" type="file" accept="image/*" multiple data-change="upload">`) +
+      `<div class="chips">${folders.map((x) => `<a class="chip${f === x ? " on" : ""}" href="#/galeria?p=${encodeURIComponent(x)}">${e(x)}<span class="n">${x === "Todas" ? S.gallery.length : S.gallery.filter((g) => g.folder === x).length}</span></a>`).join("")}</div>
+      <div class="gallery">${list.map((g) => `<button type="button" class="card media" data-act="media" data-id="${g.id}"><span class="media-img"><img src="${e(g.src)}" alt="${e(g.alt)}" loading="lazy"></span><span class="media-cap"><b>${e(g.name)}</b><small class="soft">${kb(g.size)} · ${e(g.folder)}</small></span></button>`).join("") || `<p class="empty">Nenhuma imagem nesta pasta.</p>`}</div>`;
+  };
+
+  // Afiliados
+  V.afiliados = (id, q) => {
+    const f = q.get("s") || "todos";
+    const comm = (a) => {
+      const avg = 98;
+      return a.sales * avg * (a.rate / 100);
+    };
+    const list = S.affiliates.filter((a) => f === "todos" || a.status === f);
+    const act = S.affiliates.filter((a) => a.status === "ativo");
+    const due = act.reduce((s, a) => s + Math.max(0, comm(a) - a.paid), 0);
+    return head("Afiliados", "Parceiros que divulgam a loja com link ou cupom próprio e ganham comissão por venda.", `<button class="btn" type="button" data-act="pay-affiliates">Pagar comissões</button><button class="btn btn--accent" type="button" data-act="edit-affiliate">+ Novo afiliado</button>`) +
+      `<div class="grid-kpi">
+        <div class="card kpi"><span>Afiliados ativos</span><b>${act.length}</b></div>
+        <div class="card kpi"><span>Cliques no mês</span><b>${act.reduce((s, a) => s + a.clicks, 0).toLocaleString("pt-BR")}</b></div>
+        <div class="card kpi"><span>Vendas por afiliados</span><b>${act.reduce((s, a) => s + a.sales, 0)}</b></div>
+        <div class="card kpi"><span>Comissão a pagar</span><b>${brl(due)}</b></div>
+      </div>
+      <div class="chips">${[["todos", "Todos"], ["ativo", "Ativos"], ["pendente", "Aguardando aprovação"], ["suspenso", "Suspensos"]].map(([v, l]) => `<a class="chip${f === v ? " on" : ""}" href="#/afiliados?s=${v}">${l}<span class="n">${v === "todos" ? S.affiliates.length : S.affiliates.filter((a) => a.status === v).length}</span></a>`).join("")}</div>
+      <section class="card"><div class="table-box"><table><thead><tr><th>Afiliado</th><th>Cupom / link</th><th class="r">Comissão</th><th class="r">Cliques</th><th class="r">Vendas</th><th class="r">Conversão</th><th class="r">A pagar</th><th>Status</th><th></th></tr></thead><tbody>
+      ${list.map((a) => `<tr><td><span class="me"><span class="avatar">${initials(a.name)}</span><span><b>${e(a.name)}</b><br><small class="soft">${e(a.type)} · ${e(a.email)}</small></span></span></td>
+        <td><span style="display:inline-flex;align-items:center;gap:6px"><b style="font-family:var(--display);letter-spacing:.04em">${e(a.code)}</b><button class="btn btn--icon btn--sm" type="button" data-act="copy-link" data-v="https://orbitax.duckdns.org/?ref=${e(a.code.toLowerCase())}" aria-label="Copiar link de ${e(a.name)}" title="Copiar link">${ico("copy")}</button></span></td>
+        <td class="r num">${a.rate}%</td><td class="r num">${a.clicks.toLocaleString("pt-BR")}</td><td class="r num">${a.sales}</td><td class="r num">${a.clicks ? ((a.sales / a.clicks) * 100).toLocaleString("pt-BR", { maximumFractionDigits: 1 }) : 0}%</td>
+        <td class="r num"><b>${brl(Math.max(0, comm(a) - a.paid))}</b></td>
+        <td>${st({ ativo: "Ativo", pendente: "Pendente", suspenso: "Suspenso" }[a.status], a.status === "ativo" ? "ok" : a.status === "pendente" ? "warn" : "bad")}</td>
+        <td class="r" style="white-space:nowrap">${a.status === "pendente" ? `<button class="btn btn--sm btn--accent" type="button" data-act="aff-status" data-id="${a.id}" data-v="ativo">Aprovar</button> ` : ""}${a.status === "ativo" ? `<button class="btn btn--sm" type="button" data-act="aff-status" data-id="${a.id}" data-v="suspenso">Suspender</button> ` : ""}${a.status === "suspenso" ? `<button class="btn btn--sm" type="button" data-act="aff-status" data-id="${a.id}" data-v="ativo">Reativar</button> ` : ""}<button class="btn btn--sm" type="button" data-act="edit-affiliate" data-id="${a.id}">Editar</button></td></tr>`).join("") || `<tr><td colspan="9" class="empty">Nenhum afiliado aqui.</td></tr>`}
+      </tbody></table></div></section>
+      <section class="card card-pad"><h2>Regras do programa</h2><p class="muted" style="margin:6px 0 0">Comissão paga sobre pedidos entregues, 30 dias após a entrega. Cupons de afiliado não acumulam com outros cupons. O cálculo usa ticket médio de R$ 98,00 nesta demonstração.</p></section>`;
+  };
+
+  // Banidos
+  V.banidos = () => head("Banidos", "Bloqueie e-mails, CPFs, telefones e IPs ligados a fraude ou abuso. Quem está aqui não consegue finalizar compra no site.", `<button class="btn btn--accent" type="button" data-act="edit-ban">+ Bloquear</button>`) +
+    `<div class="grid-kpi">${["E-mail", "CPF", "Telefone", "IP"].map((k) => `<div class="card kpi"><span>${k}</span><b>${S.banned.filter((b) => b.kind === k).length}</b></div>`).join("")}</div>
+    <section class="card"><div class="table-box"><table><thead><tr><th>Tipo</th><th>Valor bloqueado</th><th>Motivo</th><th>Quando</th><th>Por</th><th></th></tr></thead><tbody>
+    ${S.banned.map((b) => `<tr><td>${st(b.kind, "bad")}</td><td><b>${e(b.value)}</b></td><td>${e(b.reason)}</td><td class="muted">${dt(b.at)}</td><td class="muted">${e(b.who)}</td><td class="r"><button class="btn btn--sm" type="button" data-act="unban" data-id="${b.id}">Desbloquear</button></td></tr>`).join("") || `<tr><td colspan="6" class="empty">Ninguém bloqueado.</td></tr>`}
+    </tbody></table></div></section>
+    <section class="card card-pad"><h2>Proteção automática</h2><div class="stack" style="margin-top:12px">
+      ${sw('data-change="antifraud" data-k="cards"', S.store.antifraudCards !== false, "Bloquear IP após 10 pagamentos recusados em 1 hora")}
+      ${sw('data-change="antifraud" data-k="temp"', S.store.antifraudTemp !== false, "Recusar e-mails descartáveis")}
+      ${sw('data-change="antifraud" data-k="coupon"', !!S.store.antifraudCoupon, "Limitar cupom de primeira compra a um por CPF")}
+    </div></section>`;
+
+  // Plugins
+  V.plugins = (id, q) => {
+    const f = q.get("c") || "Todos";
+    const cats = ["Todos", ...new Set(S.plugins.map((p) => p.cat))];
+    const list = S.plugins.filter((p) => f === "Todos" || p.cat === f);
+    return head("Plugins", `${S.plugins.filter((p) => p.on).length} de ${S.plugins.length} instalados. Recursos extras que você liga e desliga sem mexer no código.`, "") +
+      `<div class="chips">${cats.map((c) => `<a class="chip${f === c ? " on" : ""}" href="#/plugins?c=${encodeURIComponent(c)}">${e(c)}</a>`).join("")}</div>
+      <div class="grid-cards">${list.map((p) => `<article class="card card-pad stack" style="gap:10px"><div class="head" style="align-items:center"><span class="avatar">${ico("puzzle")}</span>${p.on ? st("Instalado", "ok") : st(p.price, "neutral")}</div><div><h3>${e(p.name)}</h3><small class="soft">${e(p.by)} · ${e(p.cat)}</small></div><p class="muted" style="margin:0;flex:1">${e(p.desc)}</p><div class="head" style="align-items:center">${sw(`data-change="plugin-on" data-id="${p.id}" aria-label="Ativar ${e(p.name)}"`, p.on, p.on ? "Ativo" : "Desligado")}${p.on ? `<button class="btn btn--sm" type="button" data-act="plugin-config" data-id="${p.id}">Configurar</button>` : ""}</div></article>`).join("")}</div>`;
+  };
+
+  // Integrações
+  V.integracoes = () => head("Integrações", "Conecte a loja a marketplaces, ferramentas de anúncio, logística e ERP.", "") +
+    `<div class="grid-cards">${S.integrations.map((i) => `<article class="card card-pad stack" style="gap:10px"><div class="head" style="align-items:center"><h3>${e(i.name)}</h3>${i.on ? st("Conectado", "ok") : st("Desconectado", "neutral")}</div><p class="muted" style="margin:0;flex:1">${e(i.desc)}</p>${i.on ? `<small class="soft">${e(i.account)}${i.last ? " · sincronizado " + dt(i.last) : ""}</small>` : ""}<div class="chips">${i.on ? `<button class="btn btn--sm" type="button" data-act="sync" data-id="${i.id}">Sincronizar agora</button><button class="btn btn--sm btn--danger" type="button" data-act="integration" data-id="${i.id}">Desconectar</button>` : `<button class="btn btn--sm btn--accent" type="button" data-act="integration" data-id="${i.id}">Conectar</button>`}</div></article>`).join("")}</div>
+    <section class="card"><div class="card-head"><h2>Chaves de API</h2><button class="btn btn--sm" type="button" data-act="new-key">+ Nova chave</button></div><div class="table-box"><table><thead><tr><th>Nome</th><th>Chave</th><th>Criada</th><th>Último uso</th><th></th></tr></thead><tbody>
+    ${S.apiKeys.map((k) => `<tr><td><b>${e(k.name)}</b></td><td><code>${e(k.key)}</code></td><td class="muted">${new Date(k.created + "T12:00").toLocaleDateString("pt-BR")}</td><td class="muted">${k.last ? dt(k.last) : "Nunca"}</td><td class="r"><button class="btn btn--sm btn--danger" type="button" data-act="revoke-key" data-id="${k.id}">Revogar</button></td></tr>`).join("") || `<tr><td colspan="5" class="empty">Nenhuma chave.</td></tr>`}
+    </tbody></table></div></section>
+    <section class="card"><div class="card-head"><h2>Webhooks</h2><button class="btn btn--sm" type="button" data-act="new-hook">+ Webhook</button></div><div class="list-plain">${S.webhooks.map((w) => `<div><span class="grow"><b>${e(w.event)}</b><br><small class="soft">${e(w.url)}</small></span>${sw(`data-change="hook-on" data-id="${w.id}" aria-label="Ativo"`, w.on)}</div>`).join("")}</div></section>`;
+
+  // Domínios
+  V.dominios = () => head("Domínios", "Endereços que abrem a loja. O principal é o que aparece para o cliente; os outros redirecionam para ele.", `<button class="btn btn--accent" type="button" data-act="add-domain">+ Conectar domínio</button>`) +
+    `<section class="card"><div class="table-box"><table><thead><tr><th>Domínio</th><th>DNS</th><th>Certificado SSL</th><th>Adicionado</th><th></th></tr></thead><tbody>
+    ${S.domains.map((d) => `<tr><td><b>${e(d.host)}</b> ${d.primary ? st("Principal", "info") : ""}</td><td>${st(d.dns, d.dns === "Verificado" ? "ok" : "warn")}</td><td>${st(d.ssl, d.ssl === "Ativo" ? "ok" : "warn")}</td><td class="muted">${new Date(d.added + "T12:00").toLocaleDateString("pt-BR")}</td><td class="r" style="white-space:nowrap">${d.dns !== "Verificado" ? `<button class="btn btn--sm" type="button" data-act="verify-domain" data-id="${d.id}">Verificar</button> ` : ""}${!d.primary && d.dns === "Verificado" ? `<button class="btn btn--sm" type="button" data-act="primary-domain" data-id="${d.id}">Tornar principal</button> ` : ""}${!d.primary ? `<button class="btn btn--sm btn--danger" type="button" data-act="del-domain" data-id="${d.id}">Remover</button>` : ""}</td></tr>`).join("")}
+    </tbody></table></div></section>
+    <section class="card card-pad stack"><h2>Como apontar o domínio</h2><p class="muted" style="margin:0">No painel onde o domínio foi registrado (Registro.br, por exemplo), crie estes registros. A verificação costuma levar alguns minutos.</p>
+      <div class="table-box"><table><thead><tr><th>Tipo</th><th>Nome</th><th>Valor</th></tr></thead><tbody><tr><td>A</td><td>@</td><td><code>203.0.113.10</code> (exemplo)</td></tr><tr><td>CNAME</td><td>www</td><td><code>orbitax.duckdns.org</code></td></tr></tbody></table></div></section>`;
+
+  // Templates
+  V.templates = () => head("Templates", `Escolha o visual da loja. ${st("Beta", "warn")} Os templates novos ainda estão em teste.`, "") +
+    `<div class="grid-cards">${S.templates.map((t) => `<article class="card" style="overflow:hidden;display:flex;flex-direction:column">
+      <div class="tpl" style="background:${t.colors[1]};color:${t.colors[2]}"><span class="tpl-bar" style="background:${t.colors[0]}"></span><span class="tpl-h" style="background:${t.colors[2]}"></span><span class="tpl-p" style="background:${t.colors[2]}"></span><span class="tpl-grid">${"<i></i>".repeat(4)}</span><span class="tpl-btn" style="background:${t.colors[0]}"></span></div>
+      <div class="card-pad stack" style="gap:8px;flex:1"><div class="head" style="align-items:center"><h3>${e(t.name)}</h3>${t.active ? st("Em uso", "ok") : ""}</div><p class="muted" style="margin:0;flex:1">${e(t.desc)}</p>
+      <div class="chips">${t.active ? `<button class="btn btn--sm" type="button" data-act="customize-tpl">Personalizar</button>` : `<button class="btn btn--sm btn--accent" type="button" data-act="apply-tpl" data-id="${t.id}">Aplicar</button><button class="btn btn--sm" type="button" data-act="preview-tpl" data-id="${t.id}">Pré-visualizar</button>`}</div></div></article>`).join("")}</div>`;
+
   const notFound = () => head("Não encontrado", "Esse item não existe ou foi excluído.", `<a class="btn" href="#/painel">Voltar ao painel</a>`);
 
   function login() {
@@ -709,7 +808,7 @@
     menu: () => $("#side").classList.toggle("open"),
     theme: (el) => { S.theme = el.dataset.v; save(); rerender(); },
     logout: () => { S.logged = false; save(); route(); },
-    reset: () => { if (confirm("Restaurar todos os dados de demonstração? As alterações feitas neste navegador serão perdidas.")) { store.del(KEY); S = Object.assign({ version: 1, theme: S.theme, logged: true }, clone(window.ORBITX_SEED)); save(); route(); toast("Dados de demonstração restaurados"); } },
+    reset: () => { if (confirm("Restaurar todos os dados de demonstração? As alterações feitas neste navegador serão perdidas.")) { store.del(KEY); S = Object.assign({ version: 2, theme: S.theme, logged: true }, clone(window.ORBITX_SEED)); save(); route(); toast("Dados de demonstração restaurados"); } },
     range: (el) => { S.ui = { range: +el.dataset.v }; save(); rerender(); },
     close: closeModal,
     print: () => window.print(),
@@ -747,6 +846,29 @@
     "menu-move": (el) => { const a = S.menu[el.dataset.k], i = +el.dataset.i, j = i + +el.dataset.v; [a[i], a[j]] = [a[j], a[i]]; save(); rerender(); },
     "edit-ship": (el) => { const s = el.dataset.id ? S.shipping.find((x) => x.id === +el.dataset.id) : null; modal(s ? "Editar " + s.name : "Nova forma de envio", fld("name", "Nome", s && s.name, "text", "required") + fld("region", "Região atendida", s ? s.region : "Brasil") + `<div class="row">${fld("price", "Preço", s ? s.price : "R$ 0,00")}${fld("days", "Prazo", s ? s.days : "")}</div>`, (fd) => { const d = { name: fd.get("name"), region: fd.get("region"), price: fd.get("price"), days: fd.get("days") }; if (s) Object.assign(s, d); else S.shipping.push({ id: Date.now(), on: true, ...d }); toast("Forma de envio salva"); }); },
     invite: () => modal("Convidar para a equipe", fld("name", "Nome", "", "text", "required") + fld("email", "E-mail", "", "email", "required") + `<div class="field"><label for="m-role">Função</label><select id="m-role" name="role" class="input">${Object.keys(S.roles).map((r) => `<option>${r}</option>`).join("")}</select></div>`, (fd) => { S.team.push({ id: Date.now(), name: fd.get("name"), email: fd.get("email"), role: fd.get("role"), last: "", on: true }); log("Convidou " + fd.get("name") + " como " + fd.get("role")); toast("Convite enviado (simulado)"); }, "Enviar convite"),
+
+    "ban-customer": (el) => { const c = cust(el.dataset.id); if (!confirm(`Banir ${c.name}? O e-mail ${c.email} não conseguirá mais comprar no site.`)) return; S.banned.unshift({ id: Date.now(), kind: "E-mail", value: c.email, reason: "Banido pelo cadastro do cliente", at: nowIso(), who: "Marina Souza" }); log("Baniu o cliente " + c.name); save(); rerender(); toast(c.name + " banido"); },
+    "edit-ban": () => modal("Bloquear", `<div class="field"><label for="m-kind">Tipo</label><select id="m-kind" name="kind" class="input"><option>E-mail</option><option>CPF</option><option>Telefone</option><option>IP</option></select></div>` + fld("value", "Valor", "", "text", "required") + fld("reason", "Motivo", "", "text", "required"), (fd) => { S.banned.unshift({ id: Date.now(), kind: fd.get("kind"), value: fd.get("value").trim(), reason: fd.get("reason"), at: nowIso(), who: "Marina Souza" }); log("Bloqueou " + fd.get("kind").toLowerCase() + " " + fd.get("value")); toast("Bloqueio adicionado"); }, "Bloquear"),
+    unban: (el) => { const b = S.banned.find((x) => x.id === +el.dataset.id); if (!confirm("Desbloquear " + b.value + "?")) return; S.banned = S.banned.filter((x) => x !== b); log("Desbloqueou " + b.value); save(); rerender(); toast("Desbloqueado"); },
+    media: (el) => { const g = S.gallery.find((x) => x.id === +el.dataset.id); modal(g.name, `<img src="${e(g.src)}" alt="${e(g.alt)}" style="max-height:260px;margin:0 auto;background:#fff;border-radius:12px;padding:10px;border:1px solid var(--line)"><div class="row"><div><span class="label">Tamanho</span><br>${kb(g.size)}</div><div><span class="label">Dimensões</span><br>${g.w} × ${g.h} px</div><div><span class="label">Enviada</span><br>${dfull(g.at)}</div></div>` + fld("alt", "Texto alternativo (acessibilidade e Google)", g.alt) + `<div class="field"><label for="m-folder">Pasta</label><select id="m-folder" name="folder" class="input">${["Produtos", "Banners", "Marca", "Páginas"].map((x) => `<option${g.folder === x ? " selected" : ""}>${x}</option>`).join("")}</select></div><div><span class="label">Usada em</span><br>${e(g.used.join(", ") || "Nenhum lugar")}</div><div><button class="btn btn--sm btn--danger" type="button" data-act="del-media" data-id="${g.id}">${ico("trash")}Excluir imagem</button></div>`, (fd) => { g.alt = fd.get("alt"); g.folder = fd.get("folder"); toast("Imagem atualizada"); }); },
+    "del-media": (el) => { const g = S.gallery.find((x) => x.id === +el.dataset.id); if (g.used.length && !confirm(`${g.name} está em uso (${g.used.join(", ")}). Excluir mesmo assim?`)) return; S.gallery = S.gallery.filter((x) => x !== g); closeModal(); save(); rerender(); toast("Imagem excluída"); },
+    "edit-affiliate": (el) => { const a = el.dataset.id ? S.affiliates.find((x) => x.id === +el.dataset.id) : null; modal(a ? "Editar " + a.name : "Novo afiliado", fld("name", "Nome ou canal", a && a.name, "text", "required") + `<div class="row">${fld("type", "Tipo", a ? a.type : "Instagram")}${fld("email", "E-mail", a && a.email, "email", "required")}</div><div class="row">${fld("code", "Cupom / código", a && a.code, "text", 'required style="text-transform:uppercase"')}${fld("rate", "Comissão (%)", a ? a.rate : 8, "number", 'min="0" max="50" step="0.5"')}</div>`, (fd) => { const d = { name: fd.get("name"), type: fd.get("type"), email: fd.get("email"), code: fd.get("code").toUpperCase().replace(/\s+/g, ""), rate: +fd.get("rate") }; if (S.affiliates.some((x) => x.code === d.code && x !== a)) { toast("Código " + d.code + " já em uso"); return false; } if (a) Object.assign(a, d); else S.affiliates.unshift({ id: Date.now(), clicks: 0, sales: 0, status: "ativo", paid: 0, since: S.today.slice(0, 10), ...d }); log((a ? "Editou" : "Cadastrou") + " o afiliado " + d.name); toast("Afiliado salvo"); }); },
+    "aff-status": (el) => { const a = S.affiliates.find((x) => x.id === +el.dataset.id); a.status = el.dataset.v; log((el.dataset.v === "ativo" ? "Ativou" : "Suspendeu") + " o afiliado " + a.name); save(); rerender(); toast(a.name + ": " + el.dataset.v); },
+    "pay-affiliates": () => { let n = 0; S.affiliates.filter((a) => a.status === "ativo").forEach((a) => { const c = a.sales * 98 * (a.rate / 100); if (c > a.paid) { a.paid = c; n++; } }); log("Pagou comissões de " + n + " afiliado(s)"); save(); rerender(); toast(n ? "Comissões de " + n + " afiliado(s) marcadas como pagas" : "Nada a pagar agora"); },
+    "copy-link": (el) => { try { navigator.clipboard.writeText(el.dataset.v); } catch (_) { /* sem área de transferência */ } toast("Link copiado: " + el.dataset.v); },
+    "plugin-config": (el) => { const p = S.plugins.find((x) => x.id === el.dataset.id); modal(p.name, `<p class="muted" style="margin:0">${e(p.desc)}</p>` + fld("opt", "Texto exibido", p.id === "whatsapp" ? "Fale com a OrbitX" : "Padrão") + sw('name="mobile" checked', true, "Mostrar também no celular"), () => toast("Plugin configurado")); },
+    integration: (el) => { const i = S.integrations.find((x) => x.id === el.dataset.id); if (i.on) { if (!confirm("Desconectar " + i.name + "?")) return; i.on = false; log("Desconectou " + i.name); save(); rerender(); toast(i.name + " desconectado"); return; } modal("Conectar " + i.name, `<p class="muted" style="margin:0">Na versão real, aqui abre o login de ${e(i.name)} para autorizar o acesso. Na demonstração, basta informar a conta.</p>` + fld("account", "Conta ou ID", "", "text", "required"), (fd) => { i.on = true; i.account = fd.get("account"); i.last = nowIso(); log("Conectou " + i.name); toast(i.name + " conectado"); }, "Conectar"); },
+    sync: (el) => { const i = S.integrations.find((x) => x.id === el.dataset.id); i.last = nowIso(); save(); rerender(); toast(i.name + " sincronizado"); },
+    "new-key": () => modal("Nova chave de API", fld("name", "Para que serve", "", "text", "required"), (fd) => { const k = "ox_live_" + Math.random().toString(16).slice(2, 10) + Math.random().toString(16).slice(2, 10); S.apiKeys.push({ id: Date.now(), name: fd.get("name"), key: k.slice(0, 8) + "••••••••" + k.slice(-4), created: S.today.slice(0, 10), last: "" }); log("Criou a chave de API " + fd.get("name")); setTimeout(() => toast("Chave criada: " + k + " (copie agora, ela não aparece de novo)"), 50); }, "Criar chave"),
+    "revoke-key": (el) => { const k = S.apiKeys.find((x) => x.id === +el.dataset.id); if (!confirm("Revogar a chave " + k.name + "? Quem usa essa chave perde o acesso.")) return; S.apiKeys = S.apiKeys.filter((x) => x !== k); log("Revogou a chave " + k.name); save(); rerender(); toast("Chave revogada"); },
+    "new-hook": () => modal("Novo webhook", `<div class="field"><label for="m-ev">Evento</label><select id="m-ev" name="event" class="input">${["Pedido criado", "Pedido pago", "Pedido enviado", "Estoque baixo", "Novo cliente", "Nova avaliação"].map((x) => `<option>${x}</option>`).join("")}</select></div>` + fld("url", "URL que recebe o aviso", "https://", "url", "required"), (fd) => { S.webhooks.push({ id: Date.now(), event: fd.get("event"), url: fd.get("url"), on: true }); toast("Webhook criado"); }),
+    "add-domain": () => modal("Conectar domínio", fld("host", "Domínio", "", "text", 'required placeholder="www.minhaloja.com.br"'), (fd) => { const host = fd.get("host").trim().toLowerCase().replace(/^https?:\/\//, "").replace(/\/.*$/, ""); if (S.domains.some((d) => d.host === host)) { toast(host + " já está conectado"); return false; } S.domains.push({ id: Date.now(), host, primary: false, ssl: "Aguardando DNS", dns: "Pendente", added: S.today.slice(0, 10) }); log("Adicionou o domínio " + host); toast("Domínio adicionado. Configure o DNS abaixo."); }, "Adicionar"),
+    "verify-domain": (el) => { const d = S.domains.find((x) => x.id === +el.dataset.id); d.dns = "Verificado"; d.ssl = "Ativo"; save(); rerender(); toast(d.host + " verificado e com SSL ativo"); },
+    "primary-domain": (el) => { S.domains.forEach((d) => (d.primary = d.id === +el.dataset.id)); const d = S.domains.find((x) => x.primary); log("Definiu " + d.host + " como domínio principal"); save(); rerender(); toast(d.host + " agora é o principal"); },
+    "del-domain": (el) => { const d = S.domains.find((x) => x.id === +el.dataset.id); if (!confirm("Remover " + d.host + "?")) return; S.domains = S.domains.filter((x) => x !== d); save(); rerender(); toast("Domínio removido"); },
+    "apply-tpl": (el) => { const t = S.templates.find((x) => x.id === el.dataset.id); if (!confirm(`Aplicar o template ${t.name}? O conteúdo (produtos, páginas, banners) continua igual; só o visual muda.`)) return; S.templates.forEach((x) => (x.active = x === t)); log("Aplicou o template " + t.name); save(); rerender(); toast("Template " + t.name + " aplicado"); },
+    "preview-tpl": (el) => { const t = S.templates.find((x) => x.id === el.dataset.id); modal("Prévia: " + t.name, `<div class="tpl tpl--big" style="background:${t.colors[1]};color:${t.colors[2]}"><span class="tpl-bar" style="background:${t.colors[0]}"></span><span class="tpl-h" style="background:${t.colors[2]}"></span><span class="tpl-p" style="background:${t.colors[2]}"></span><span class="tpl-grid">${"<i></i>".repeat(4)}</span><span class="tpl-btn" style="background:${t.colors[0]}"></span></div><p class="muted" style="margin:0">${e(t.desc)}</p>`, null); },
+    "customize-tpl": () => { location.hash = "#/aparencia"; },
     "email-preview": (el) => { const m = S.store.emails.find((x) => x.id === el.dataset.id); modal(m.name, `<div style="border:1px solid var(--line);border-radius:12px;overflow:hidden"><div style="background:#121514;padding:16px"><img src="img/logo-escuro.svg" alt="OrbitX" style="height:28px;width:auto"></div><div style="padding:18px"><p style="margin-top:0"><b>Olá, Rafael!</b></p><p>${m.id === "envio" ? "Seu pedido #10482 saiu para entrega. Código de rastreio: BR123456789OX." : m.id === "carrinho" ? "Você deixou itens no carrinho. Que tal finalizar? Use o cupom BEMVINDO10." : m.id === "avaliacao" ? "Seu pedido chegou? Conte o que achou do produto e ajude outros motoristas." : "Recebemos o seu pedido #10482 no valor de R$ 176,28. Assim que o pagamento for aprovado, avisamos por aqui."}</p><span class="btn btn--accent btn--sm">Ver pedido</span></div></div>`, null); }
   };
 
@@ -764,6 +886,19 @@
     role: (el) => { S.team.find((x) => x.id === +el.dataset.id).role = el.value; toast("Função alterada"); },
     "user-on": (el) => { S.team.find((x) => x.id === +el.dataset.id).on = el.checked; },
     perm: (el) => { const a = S.roles[el.dataset.r]; if (el.checked) a.push(el.dataset.a); else a.splice(a.indexOf(el.dataset.a), 1); },
+
+    upload: (el) => {
+      const files = [...el.files];
+      files.forEach((file) => {
+        if (file.size > 400 * 1024) { toast(file.name + " passa de 400 KB, o limite desta demonstração"); return; }
+        const r = new FileReader();
+        r.onload = () => { const img = new Image(); img.onload = () => { S.gallery.unshift({ id: Date.now() + Math.random(), src: r.result, name: file.name, alt: file.name.replace(/\.[^.]+$/, ""), size: file.size, w: img.width, h: img.height, folder: "Produtos", at: nowIso(), used: [] }); save(); rerender(); toast(file.name + " enviada"); }; img.src = r.result; };
+        r.readAsDataURL(file);
+      });
+    },
+    antifraud: (el) => { S.store["antifraud" + el.dataset.k.charAt(0).toUpperCase() + el.dataset.k.slice(1)] = el.checked; toast("Proteção " + (el.checked ? "ativada" : "desativada")); },
+    "plugin-on": (el) => { const p = S.plugins.find((x) => x.id === el.dataset.id); p.on = el.checked; log((el.checked ? "Ativou" : "Desativou") + " o plugin " + p.name); toast(p.name + (el.checked ? " ativado" : " desativado")); },
+    "hook-on": (el) => { S.webhooks.find((x) => x.id === +el.dataset.id).on = el.checked; },
     "email-on": (el) => { S.store.emails.find((x) => x.id === el.dataset.id).on = el.checked; }
   };
 
@@ -818,7 +953,7 @@
       if (bar) { bar.hidden = !n; $("#bulk-n", bar).textContent = n + " selecionado(s)"; }
       return;
     }
-    if (el.dataset.change && CHANGE[el.dataset.change]) { CHANGE[el.dataset.change](el); save(); if (["section-on", "coupon-active", "cat-visible"].includes(el.dataset.change)) rerender(); return; }
+    if (el.dataset.change && CHANGE[el.dataset.change]) { CHANGE[el.dataset.change](el); save(); if (["section-on", "coupon-active", "cat-visible", "plugin-on"].includes(el.dataset.change)) rerender(); return; }
     if (el.dataset.preview) { const img = $(el.dataset.preview); if (img) img.src = el.value; }
   });
 

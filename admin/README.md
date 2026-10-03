@@ -1,8 +1,8 @@
 # Painel administrativo OrbitX (demonstração)
 
-Painel de gestão da loja com dados fictícios: pedidos, produtos, estoque, categorias, clientes,
-avaliações, cupons, relatórios, home e banners, páginas, menu, aparência, frete, pagamentos,
-equipe e e-mails. O design começou no Claude Design (artboard "Admin OrbitX" no canvas
+Painel de gestão da loja com dados fictícios: pedidos, produtos, estoque, categorias, galeria,
+clientes, avaliações, banidos, cupons, afiliados, relatórios, home e banners, páginas, menu,
+templates, aparência, plugins, integrações, domínios, frete, pagamentos, equipe e e-mails. O design começou no Claude Design (artboard "Admin OrbitX" no canvas
 OrbitX Loja) e segue as cores e fontes da loja, com modo claro e escuro.
 
 - Sem backend e sem dependências: HTML, CSS e JavaScript puros.

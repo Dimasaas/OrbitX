@@ -16,6 +16,11 @@ WooCommerce e VTEX. Os nomes mudam, mas os blocos se repetem em todas.
 | Marketing | Cupons (percentual, valor fixo, frete grátis), pedido mínimo, limite de usos, validade | Idem, com status Ativo/Agendado/Expirado |
 | Relatórios | Vendas por canal, produto, categoria, pagamento e região; margem; exportação | Idem |
 | Conteúdo do site | Editor da home (banner, seções, destaques), páginas institucionais com editor de texto, menu e rodapé, tema e logo | Home com prévia ao vivo e reordenação de seções, banners, páginas com editor, menu, rodapé, redes sociais, aparência e modo manutenção |
+| Galeria de mídia | Biblioteca de imagens com pastas, texto alternativo e onde cada uma é usada | Idem, com envio de imagens |
+| Afiliados | Parceiros com cupom ou link próprio, comissão, cliques, vendas e pagamento | Idem, com aprovação, suspensão e pagamento de comissões |
+| Banidos / antifraude | Bloqueio de e-mail, CPF, telefone e IP; regras automáticas | Idem |
+| Plugins e integrações | Loja de apps, conexão com marketplace, analytics, pixel, ERP, logística, chaves de API e webhooks | Idem |
+| Domínios e templates | Domínio próprio com DNS e SSL; troca de tema | Idem (templates em beta) |
 | Configurações | Frete, pagamentos, dados da loja, equipe e permissões, e-mails transacionais, registro de atividade | Idem |
 
 O que ficou de fora de propósito, por ser demonstração: upload real de imagens, emissão de
