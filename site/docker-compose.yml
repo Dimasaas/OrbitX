@@ -12,15 +12,15 @@ services:
     image: orbitx-demo:latest
     container_name: orbitx-demo
     restart: unless-stopped
-    mem_limit: 64m
-    cpus: 0.25
+    mem_limit: 1g
+    cpus: 1.0
     ports:
       - "${ORBITX_PORTA:-8090}:80"
     logging:
       driver: json-file
       options:
-        max-size: "5m"
-        max-file: "2"
+        max-size: "10m"
+        max-file: "3"
     networks:
       - orbitx
 
