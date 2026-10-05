@@ -1,21 +1,29 @@
 # Site de demonstração da OrbitX — nginx:alpine estático.
-# Fica pendurado na rede do proxy de borda (`infra_default`) com o apelido
-# `orbitx`; quem publica 80/443 é o `caddy-borda` (rota orbitax.duckdns.org).
+#
+# ⛔ Nunca na rede de outro projeto: em 03/10/2026 este serviço se chamava
+# "site", pendurado na infra_default da casa 1001, e o nome do serviço virou
+# apelido de rede. Colidiu com o site da 1001, que passou a servir a loja.
+# Agora a rede é só deste projeto e o serviço tem nome único.
 name: orbitx
 
 services:
-  site:
+  orbitx-demo:
     build: .
-    image: orbitx-site:latest
-    container_name: orbitx-site
+    image: orbitx-demo:latest
+    container_name: orbitx-demo
     restart: unless-stopped
     mem_limit: 64m
     cpus: 0.25
+    ports:
+      - "${ORBITX_PORTA:-8090}:80"
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "2"
     networks:
-      borda:
-        aliases: [orbitx]
+      - orbitx
 
 networks:
-  borda:
-    external: true
-    name: infra_default
+  orbitx:
+    name: orbitx_isolada
