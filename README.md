@@ -35,9 +35,16 @@ Site de demonstração da loja **OrbitX Technology** (películas antirreflexo e 
 | Loja | `site/` | [`site-demo`](https://github.com/Dimasaas/OrbitX/tree/site-demo) (PR #1) |
 | Painel | `admin/` | [`claude/admin-panel-cljgk1`](https://github.com/Dimasaas/OrbitX/tree/claude/admin-panel-cljgk1) (PR #2) |
 
-HTML, CSS e JavaScript puros, sem dependências. A loja roda em um container nginx (`site/Dockerfile`).
+## Tecnologias
 
-Para abrir localmente:
+| Tecnologia | Para que serve aqui | Quem também usa |
+| --- | --- | --- |
+| HTML, CSS e JavaScript puro (sem framework) | Loja e painel inteiros, leves e sem dependências | **GitHub**, que tirou o jQuery do GitHub.com e passou a usar JavaScript puro ([blog do GitHub](https://github.blog/engineering/engineering-principles/removing-jquery-from-github-frontend/)) |
+| nginx | Servidor que entrega a loja | **Netflix**, nos servidores Open Connect que entregam os vídeos ([Netflix Open Connect](https://openconnect.netflix.com/en/appliances/)) |
+| Docker | Empacota a loja em um container (`site/Dockerfile`) | **PayPal**, que roda mais de 150 mil containers Docker ([palestra na DockerCon](https://www.youtube.com/watch?v=huX9cbEyVJw)) |
+| Caddy + Let's Encrypt | HTTPS automático na frente do site | **Shopify**, que protege mais de 4,5 milhões de domínios de lojas com Let's Encrypt ([Shopify Engineering](https://shopify.engineering/securing-shopify-domains-letsencrypt)) |
+
+## Rodar localmente
 
 ```sh
 cd site && python3 -m http.server 8080   # loja em http://localhost:8080
